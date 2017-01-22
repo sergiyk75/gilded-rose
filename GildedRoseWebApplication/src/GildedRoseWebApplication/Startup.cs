@@ -1,4 +1,4 @@
-﻿using GildedRoseWebApplication.Models;
+﻿using GildedRoseWebApplication.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,8 +27,8 @@ namespace GildedRoseWebApplication
             // Add framework services.
             services.AddMvc();
 
-            // Add items repository as a singleton so it persists between the sessions
-            services.AddSingleton<IItemsRepository>(new InMemoryItemsRepository());
+            // Add inventory service dependency as a singleton so it persists between sessions
+            services.AddSingleton<IInventoryService>(new InMemoryInventoryService());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +37,7 @@ namespace GildedRoseWebApplication
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            // configure token provider to use simple token provider and enable Jwt bearer authentication. see https://jwt.io/
             ConfigureAuth(app);
 
             app.UseMvc();

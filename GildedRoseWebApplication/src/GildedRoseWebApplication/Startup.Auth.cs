@@ -15,19 +15,19 @@ namespace GildedRoseWebApplication
     {
         // The secret key every token will be signed with.
         // Keep this safe on the server!
-        private static readonly string secretKey = "gilded-rose-rocks!123-secret-key";
-        private static readonly string issuer = "gilded-rose-web-api";
-        private static readonly string audience = "gilded-rose-web-client";
+        private static readonly string SecretKey = "gilded-rose-rocks!123-secret-key";
+        private static readonly string TheIssuer = "gilded-rose-web-api";
+        private static readonly string TheAudience = "gilded-rose-web-client";
 
         private void ConfigureAuth(IApplicationBuilder app)
         {
-            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));
+            var signingKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(SecretKey));
 
             app.UseSimpleTokenProvider(new TokenProviderOptions
             {
                 Path = "/api/token",
-                Audience = audience,
-                Issuer = issuer,
+                Audience = TheAudience,
+                Issuer = TheIssuer,
                 SigningCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256),
                 IdentityResolver = GetIdentity
             });
@@ -40,11 +40,11 @@ namespace GildedRoseWebApplication
 
                 // Validate the JWT Issuer (iss) claim
                 ValidateIssuer = true,
-                ValidIssuer = issuer,
+                ValidIssuer = TheIssuer,
 
                 // Validate the JWT Audience (aud) claim
                 ValidateAudience = true,
-                ValidAudience = audience,
+                ValidAudience = TheAudience,
 
                 // Validate the token expiry
                 ValidateLifetime = true,
@@ -64,7 +64,7 @@ namespace GildedRoseWebApplication
         private Task<ClaimsIdentity> GetIdentity(string username, string password)
         {
             // Don't do this in production, obviously!
-            if (username == "user" && password == "password")
+            if (username == "user" && password == "123")
             {
                 return Task.FromResult(new ClaimsIdentity(new GenericIdentity(username, "Token"), new Claim[] { }));
             }
