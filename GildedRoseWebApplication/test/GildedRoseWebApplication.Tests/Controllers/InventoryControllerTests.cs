@@ -6,7 +6,7 @@ using Xunit;
 
 namespace GildedRoseWebApplication.Tests.Controllers
 {
-    public class ItemsControllerTests
+    public class InventoryControllerTests
     {
         [Fact]
         public void Test()

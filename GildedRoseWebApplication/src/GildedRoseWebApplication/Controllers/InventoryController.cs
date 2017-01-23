@@ -15,6 +15,13 @@ namespace GildedRoseWebApplication.Controllers
     [Route("api/[controller]")]
     public class InventoryController : Controller
     {
+        public class ItemErrorResponse
+        {
+            public InventoryItem Item { get; set; }
+            public string Error { get; set; }
+        }
+
+
         private IInventoryService itemsSevice;
 
         public InventoryController(IInventoryService inventoryService)
@@ -84,7 +91,7 @@ namespace GildedRoseWebApplication.Controllers
 
             if (item.StockCount < buyCount)
             {
-                return BadRequest(new { Item = item, Error = "Insufficient stock level" });
+                return BadRequest(new ItemErrorResponse { Item = item, Error = "Insufficient stock level" });
             }
 
             itemsSevice.Buy(id, buyCount);

@@ -9,22 +9,30 @@ namespace GildedRoseWebApplication.Services
 {
     /// <summary>
     /// In memory implementation of inventory service for demonstration purposes
+    /// Unit testing is uneccessary 
     /// Things to consider: Gloabilization and localization: strings translation, price units
     /// </summary>
     public class InMemoryInventoryService : IInventoryService
     {
-        private static Dictionary<string, InventoryItem> inventory = new Dictionary<string, InventoryItem>();
+        private Dictionary<string, InventoryItem> inventory = new Dictionary<string, InventoryItem>();
 
-        public InMemoryInventoryService()
+        public static IInventoryService Create()
         {
-            Add(new Product { ID = "@rock", Name = "Rock", Description = "Rock beats Paper", Price = 5 }, 2);
-            Add(new Product { ID = "@paper", Name = "Paper", Description = "Paper beats Rock", Price = 10 }, 4);
-            Add(new Product { ID = "@scissors", Name = "Scissors", Description = "Scissors beats Paper", Price = 14 }, 1);
+            return new InMemoryInventoryService()
+                .Add(new Product { ID = "@rock", Name = "Rock", Description = "Rock beats Paper", Price = 5 }, 2)
+                .Add(new Product { ID = "@paper", Name = "Paper", Description = "Paper beats Rock", Price = 10 }, 4)
+                .Add(new Product { ID = "@scissors", Name = "Scissors", Description = "Scissors beats Paper", Price = 14 }, 1);
         }
 
-        private void Add(Product product, int stockCount)
+        public InMemoryInventoryService Add(Product product, int stockCount)
         {
-            inventory[product.ID] = new InventoryItem { Product = product, StockCount = stockCount };
+            return Add(new InventoryItem { Product = product, StockCount = stockCount });
+        }
+         
+        public InMemoryInventoryService Add(InventoryItem item)
+        {
+            inventory[item.Product.ID] = item;
+            return this;
         }
 
         public InventoryItem Find(string productID)
@@ -63,7 +71,7 @@ namespace GildedRoseWebApplication.Services
             if (item.StockCount < count)
                 return false;
             item.StockCount -= count;
-            return true; 
+            return true;
         }
     }
 }
