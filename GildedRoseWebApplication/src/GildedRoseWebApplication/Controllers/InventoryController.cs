@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GildedRoseWebApplication.Models;
 using GildedRoseWebApplication.Services;
@@ -37,9 +38,9 @@ namespace GildedRoseWebApplication.Controllers
         /// GET api/inventory
         /// </example> 
         [HttpGet]
-        public IEnumerable<InventoryItem> GetAll()
+        public async Task<IEnumerable<InventoryItem>> GetAll(CancellationToken cancellationToken)
         {
-            return itemsSevice.GetAll();
+            return await itemsSevice.GetAllAsync(cancellationToken);
         }
 
         /// <summary>
@@ -52,9 +53,9 @@ namespace GildedRoseWebApplication.Controllers
         /// GET api/inventory/5
         /// </exmaple>
         [HttpGet("{id}")]
-        public IActionResult GetByID(string id)
+        public async Task<IActionResult> GetByID(string id, CancellationToken cancellationToken)
         {
-            var item = itemsSevice.Find(id);
+            var item = await itemsSevice.FindAsync(id, CancellationToken.None);
             if (item == null)
             {
                 return NotFound(id);
@@ -79,9 +80,9 @@ namespace GildedRoseWebApplication.Controllers
         [Authorize]
         [HttpPut("{id}/{count}")]
         [HttpPut("{id}")]
-        public IActionResult Buy(string id, int? count)
+        public async Task<IActionResult> Buy(string id, int? count, CancellationToken cancellationToken)
         {
-            var item = itemsSevice.Find(id);
+            var item = await itemsSevice.FindAsync(id, cancellationToken);
             if (item == null)
             {
                 return NotFound(id);
@@ -94,7 +95,7 @@ namespace GildedRoseWebApplication.Controllers
                 return BadRequest(new ItemErrorResponse { Item = item, Error = "Insufficient stock level" });
             }
 
-            itemsSevice.Buy(id, buyCount);
+            await itemsSevice.BuyAsync(id, buyCount, cancellationToken);
 
             return NoContent();
         }

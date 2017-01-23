@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GildedRoseWebApplication.Models;
 
@@ -28,50 +29,56 @@ namespace GildedRoseWebApplication.Services
         {
             return Add(new InventoryItem { Product = product, StockCount = stockCount });
         }
-         
+
         public InMemoryInventoryService Add(InventoryItem item)
         {
             inventory[item.Product.ID] = item;
             return this;
         }
 
-        public InventoryItem Find(string productID)
+        public Task<InventoryItem> FindAsync(string productID, CancellationToken cancellationToken)
         {
             if (productID == null)
             {
                 throw new ArgumentNullException("productID");
             }
 
-            InventoryItem item;
-            if (inventory.TryGetValue(productID, out item))
+            return Task.Run(() =>
             {
-                return item;
-            }
-            return null;
+                InventoryItem item;
+                if (inventory.TryGetValue(productID, out item))
+                {
+                    return item;
+                }
+                return null;
+            });
         }
 
-        public IEnumerable<InventoryItem> GetAll()
+        public Task<IEnumerable<InventoryItem>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return inventory.Values;
+            return Task.Run(() => (IEnumerable<InventoryItem>)inventory.Values);
         }
 
-        public bool Buy(string productID, int count)
+        public Task<bool> BuyAsync(string productID, int count, CancellationToken cancellationToken)
         {
             if (productID == null)
             {
                 throw new ArgumentNullException("productID");
             }
 
-            if (count <= 0)
+            return Task.Run(() =>
             {
-                throw new ArgumentOutOfRangeException("count");
-            }
+                if (count <= 0)
+                {
+                    throw new ArgumentOutOfRangeException("count");
+                }
 
-            var item = inventory[productID];
-            if (item.StockCount < count)
-                return false;
-            item.StockCount -= count;
-            return true;
+                var item = inventory[productID];
+                if (item.StockCount < count)
+                    return false;
+                item.StockCount -= count;
+                return true;
+            });
         }
     }
 }
