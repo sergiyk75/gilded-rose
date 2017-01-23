@@ -70,13 +70,8 @@ namespace GildedRoseWebApplication.Tests.Controllers
             services.AddSingleton<IInventoryService>(inventoryService);
         }
         
-        private static bool InventoryItemsEqual(InventoryItem first, InventoryItem second)
-        {
-            return first.Product.ID == second.Product.ID;
-        }
-
         [Fact]
-        public async Task GetAllTest()
+        public async Task GetAllItems()
         {
             // Act
             var response = await client.GetAsync(ControllerPath.ListInventory);
@@ -84,23 +79,26 @@ namespace GildedRoseWebApplication.Tests.Controllers
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
-            var inventory = JsonConvert.DeserializeObject<InventoryItem[]>(json);
 
-            Assert.Equal(2, inventory.Length);
-            Assert.True(inventory.Any(item => InventoryItemsEqual(item, expectedItem1)));
-            Assert.True(inventory.Any(item => InventoryItemsEqual(item, expectedItem2)));
+            // Assert
+            var inventoryItems = JsonConvert.DeserializeObject<InventoryItem[]>(json);
+
+            Assert.Equal(2, inventoryItems.Length);
+            Assert.True(inventoryItems.Any(item => item.Product.ID == expectedItem1.Product.ID));
+            Assert.True(inventoryItems.Any(item => item.Product.ID == expectedItem2.Product.ID));
         }
 
         [Theory]
         [InlineData("product_1")]
         [InlineData("product_2")]
-        public async Task GetByIDTestOK(string productID)
+        public async Task GetItem_OK(string productID)
         {
             // Act
             var response = await client.GetAsync(string.Format(ControllerPath.GetByID, productID));
 
             response.EnsureSuccessStatusCode();
 
+            // Assert
             var json = await response.Content.ReadAsStringAsync();
             var item = JsonConvert.DeserializeObject<InventoryItem>(json);
 
@@ -108,18 +106,19 @@ namespace GildedRoseWebApplication.Tests.Controllers
         }
 
         [Fact]
-        public async Task GetByIDTestFailed()
+        public async Task GetItem_Failed()
         {
             // Act
             var response = await client.GetAsync(string.Format(ControllerPath.GetByID, "non-existing-product-ID"));
 
+            // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Theory]
         [InlineData("product_1")]
         [InlineData("product_2")]
-        public async Task BuyTestUnauthorized(string productID)
+        public async Task Buy_Unauthorized(string productID)
         {
             // Arrange
 
@@ -128,6 +127,7 @@ namespace GildedRoseWebApplication.Tests.Controllers
             // Act
             var response = await client.PutAsync(string.Format(ControllerPath.BuyProductPath, productID), httpContent);
 
+            // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
@@ -136,7 +136,7 @@ namespace GildedRoseWebApplication.Tests.Controllers
         [InlineData("product_1", 4)]
         [InlineData("product_2", null)]
         [InlineData("product_2", 2)]
-        public async Task BuyTestOK(string productID, int? count)
+        public async Task BuyItem_OK(string productID, int? count)
         {
             // Arrange
             await ObtainAutharizationToken();
@@ -149,13 +149,14 @@ namespace GildedRoseWebApplication.Tests.Controllers
             // Act
             var response = await client.PutAsync(requestUri, httpContent);
 
+            // Assert
             response.EnsureSuccessStatusCode();
         }
 
         [Theory]
         [InlineData("product_1", 20)]
         [InlineData("product_2", 30)]
-        public async Task BuyTestFailedInsufficientStockLevel(string productID, int count)
+        public async Task BuyItem_FailedInsufficientStockLevel(string productID, int count)
         {
             // Arrange
             await ObtainAutharizationToken();
@@ -165,14 +166,15 @@ namespace GildedRoseWebApplication.Tests.Controllers
             // try to buy more products than stock count
             var response = await client.PutAsync(string.Format(ControllerPath.BuyProductsPath, productID, count), httpContent);
 
+            // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
             var json = await response.Content.ReadAsStringAsync();
-            var itemErrorResponse = JsonConvert.DeserializeObject<InventoryController.ItemErrorResponse>(json);
+            var responseValues = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 
-            Assert.Equal("Insufficient stock level", itemErrorResponse.Error);
+            Assert.Equal("Insufficient stock level", responseValues["error"]);
 
-            Assert.Equal(productID, itemErrorResponse.Item.Product.ID);
+            Assert.Equal(productID, responseValues["productID"]);
         }
         
         private async Task ObtainAutharizationToken()

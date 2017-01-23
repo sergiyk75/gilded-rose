@@ -16,13 +16,6 @@ namespace GildedRoseWebApplication.Controllers
     [Route("api/[controller]")]
     public class InventoryController : Controller
     {
-        public class ItemErrorResponse
-        {
-            public InventoryItem Item { get; set; }
-            public string Error { get; set; }
-        }
-
-
         private IInventoryService itemsSevice;
 
         public InventoryController(IInventoryService inventoryService)
@@ -38,7 +31,7 @@ namespace GildedRoseWebApplication.Controllers
         /// GET api/inventory
         /// </example> 
         [HttpGet]
-        public async Task<IEnumerable<InventoryItem>> GetAll(CancellationToken cancellationToken)
+        public async Task<IEnumerable<InventoryItem>> GetAllItems(CancellationToken cancellationToken)
         {
             return await itemsSevice.GetAllAsync(cancellationToken);
         }
@@ -53,7 +46,7 @@ namespace GildedRoseWebApplication.Controllers
         /// GET api/inventory/5
         /// </exmaple>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByID(string id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetItem(string id, CancellationToken cancellationToken)
         {
             var item = await itemsSevice.FindAsync(id, CancellationToken.None);
             if (item == null)
@@ -80,7 +73,7 @@ namespace GildedRoseWebApplication.Controllers
         [Authorize]
         [HttpPut("{id}/{count}")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Buy(string id, int? count, CancellationToken cancellationToken)
+        public async Task<IActionResult> BuyItem(string id, int? count, CancellationToken cancellationToken)
         {
             var item = await itemsSevice.FindAsync(id, cancellationToken);
             if (item == null)
@@ -92,7 +85,7 @@ namespace GildedRoseWebApplication.Controllers
 
             if (item.StockCount < buyCount)
             {
-                return BadRequest(new ItemErrorResponse { Item = item, Error = "Insufficient stock level" });
+                return BadRequest(new { productID = id, error = "Insufficient stock level" });
             }
 
             await itemsSevice.BuyAsync(id, buyCount, cancellationToken);
