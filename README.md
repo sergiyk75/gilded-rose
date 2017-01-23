@@ -7,7 +7,7 @@ API
 
 This projects implements just that.
 ## Web API actions
-* Retrieve the current inventory, i.e. list of items
-* Retrieve the inventory item with product description and stock count
+* Retrieve the current inventory, i.e. list of products with their respective info and stock count 
+* Retrieve the inventory item with product info and stock count
 * Buy a product. User must be authenticated
 
