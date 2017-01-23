@@ -26,6 +26,7 @@ namespace GildedRoseWebApplication
         {
             // Add framework services.
             services.AddMvc();
+            ConfigureCustomServices(services);
         }
 
         public virtual void ConfigureCustomServices(IServiceCollection services)
