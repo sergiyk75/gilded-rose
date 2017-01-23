@@ -11,3 +11,4 @@ This projects implements just that.
 * Retrieve the inventory item with product info and stock count
 * Buy a product. User must be authenticated
 
+![Alt text](get-token.jpg?raw=true "Postman - Get Token HTTP request")
