@@ -1458,12 +1458,22 @@
           "lib/netstandard1.0/_._": {}
         }
       },
+      "Microsoft.NETCore.Runtime/1.0.1": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.NETCore.Runtime.CoreCLR": "1.0.1",
+          "Microsoft.NETCore.Runtime.Native": "1.0.1"
+        }
+      },
       "Microsoft.NETCore.Runtime.CoreCLR/1.0.4": {
         "type": "package",
         "dependencies": {
           "Microsoft.NETCore.Jit": "1.0.4",
           "Microsoft.NETCore.Windows.ApiSets": "1.0.1"
         }
+      },
+      "Microsoft.NETCore.Runtime.Native/1.0.1": {
+        "type": "package"
       },
       "Microsoft.NETCore.Targets/1.0.1": {
         "type": "package",
@@ -4706,6 +4716,17 @@
         "runtime.json"
       ]
     },
+    "Microsoft.NETCore.Runtime/1.0.1": {
+      "sha512": "WIblAPds88Mwvcu8OjmspmHLG9zyay//n1jMVxQlxikGzZBIeRDz/O7o9qBtOR+vDpfn+Y2EbzdCmPb3brMGRg==",
+      "type": "package",
+      "path": "Microsoft.NETCore.Runtime/1.0.1",
+      "files": [
+        "Microsoft.NETCore.Runtime.1.0.1.nupkg.sha512",
+        "Microsoft.NETCore.Runtime.nuspec",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt"
+      ]
+    },
     "Microsoft.NETCore.Runtime.CoreCLR/1.0.4": {
       "sha512": "r4/aP7VYcJ+W/rJVFU+jAdjF4KrsHRDYQJ+p8weUP5n65yLzWXlQTVY6OsR560aV5EF7jc65dqsNXIryUCrEkQ==",
       "type": "package",
@@ -4716,6 +4737,17 @@
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "runtime.json"
+      ]
+    },
+    "Microsoft.NETCore.Runtime.Native/1.0.1": {
+      "sha512": "VeZR/qn/+FRH5rd1htnwBFIzSBW6xiA7Yu2UzaHKKlyf9Ev9xVXIOitWnkvb/tJMTKdmiCzmfi2TsAMajUHNZA==",
+      "type": "package",
+      "path": "Microsoft.NETCore.Runtime.Native/1.0.1",
+      "files": [
+        "Microsoft.NETCore.Runtime.Native.1.0.1.nupkg.sha512",
+        "Microsoft.NETCore.Runtime.Native.nuspec",
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt"
       ]
     },
     "Microsoft.NETCore.Targets/1.0.1": {
@@ -9485,6 +9517,7 @@
       "Microsoft.Extensions.Logging.Debug >= 1.0.0",
       "Microsoft.Extensions.Options.ConfigurationExtensions >= 1.0.0",
       "Microsoft.NETCore.App >= 1.0.1",
+      "Microsoft.NETCore.Runtime >= 1.0.1",
       "SimpleTokenProvider >= 1.0.0-*"
     ],
     ".NETCoreApp,Version=v1.0": []

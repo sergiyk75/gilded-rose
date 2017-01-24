@@ -15,9 +15,9 @@ namespace GildedRoseWebApplication.Services
     /// </summary>
     public class InMemoryInventoryService : IInventoryService
     {
-        private Dictionary<string, InventoryItem> inventory = new Dictionary<string, InventoryItem>();
+        private ConcurrentDictionary<string, InventoryItem> inventory = new ConcurrentDictionary<string, InventoryItem>();
 
-        public static IInventoryService Create()
+         public static IInventoryService Create()
         {
             return new InMemoryInventoryService()
                 .Add(new Product { ID = "@rock", Name = "Rock", Description = "Rock beats Paper", Price = 5 }, 2)
@@ -76,7 +76,18 @@ namespace GildedRoseWebApplication.Services
                 var item = inventory[productID];
                 if (item.StockCount < count)
                     return false;
-                item.StockCount -= count;
+
+                // let's make sure that buy transaction is thread safe
+                // for demonstration purposes I am using lock on the item instance 
+                // which technically is not very reliable as item instance is publicly accessable
+                // in production a private lock object instance associated with an item must be used instead
+                lock (item)
+                {
+                    if (item.StockCount < count)
+                        return false;
+                    item.StockCount -= count;
+                }
+
                 return true;
             });
         }
